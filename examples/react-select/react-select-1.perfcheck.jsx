@@ -29,8 +29,6 @@ const options = [
 
 register([
   {
-    name: "basic",
-    component: () => <Select options={options} />,
-    tests: ["single-tti", "many-tti", "bundle-size"]
+    component: () => <Select options={options} />
   }
 ]);

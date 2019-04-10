@@ -1,3 +1,3 @@
-import { registerCheck } from "./lib/register-check";
+import { registerCheck } from "./lib/runtime/register-check";
 
 export default registerCheck;

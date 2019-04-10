@@ -6,17 +6,21 @@ const fs = require("fs");
 const program = require("commander");
 const glob = require("glob");
 
-const { buildAssets } = require("./lib/build-assets");
-const { serveHarness } = require("./lib/serve-harness");
+const { buildAssets } = require("./lib/webpack/build-assets");
+const { serveHarness } = require("./lib/server/serve-assets");
+const { runAudits, checks } = require("./lib/audit");
 const pkg = require("./package.json");
 
 program
   .version(pkg.version)
-  .option("-d, --dev", "Run perfcheck in dev mode (watches files)")
-  .option("-f, --file [file]", "A perfcheck file to run")
+  .option(
+    "-f, --file [file]",
+    "A perfcheck file to run, or glob of files to run"
+  )
+  .option("-a, --audits [audits]", "A comma separated list of audits to run")
   .parse(process.argv);
 
-const isDev = program.dev;
+const audits = (program.audits && program.audits.split(",")) || [];
 const file = path.resolve(program.file);
 
 function getFiles(file) {
@@ -40,9 +44,13 @@ function getFiles(file) {
 
 async function main() {
   const files = await getFiles(file);
-  console.log(files);
-  await buildAssets({ files });
-  serveHarness();
+  const entries = await buildAssets({ files });
+  const port = serveHarness();
+  await runAudits({
+    port,
+    paths: Object.keys(entries).map(entry => `${entry}.html`),
+    audits
+  });
 }
 
 main();

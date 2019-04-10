@@ -11,6 +11,12 @@ const options = [
 
 register([
   {
-    component: () => <Select options={options} />
+    component: () => {
+      let arr = [];
+      for (let i = 0; i < 1000; i++) {
+        arr[i] = <Select key={i} options={options} />;
+      }
+      return <React.Fragment>{arr}</React.Fragment>;
+    }
   }
 ]);
